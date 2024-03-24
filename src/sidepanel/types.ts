@@ -3,6 +3,7 @@ export type Link = {
   title: string;
   date: string;
   read: boolean;
+  iconUrl?: string;
   notes: Note[];
 };
 
