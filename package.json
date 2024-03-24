@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-template-preact-vite",
+  "name": "link-saver",
   "version": "0.0.1",
-  "description": "Chrome extension template with Preact, Tailwind CSS, Vite and Typescript preconfigured.",
+  "description": "Chrome extension for saving links",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fell-lucas/chrome-extension-template-preact-vite.git"
+    "url": "https://github.com/lovemedicine/link-saver.git"
   },
   "scripts": {
     "build": "vite build",
@@ -86,6 +86,9 @@
           "arrowParens": "avoid"
         }
       ]
+    },
+    "exports": {
+      "types": "./types/index.d.ts"
     }
   }
 }
