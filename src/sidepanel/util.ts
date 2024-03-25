@@ -1,4 +1,4 @@
-import { Link, LinkMap, LinkList } from './types';
+import { Link, LinkMap, LinkList, Note } from './types';
 
 const MAP_KEY = 'linkMap';
 const LIST_KEY = 'linkList';
@@ -22,10 +22,10 @@ export function addLinkToMap(
 }
 
 export function addLinkToList(linkList: LinkList, url: string): LinkList {
-  return [...new Set([...linkList, url])];
+  return [...new Set([url, ...linkList])];
 }
 
-function buildLink(url: string, title: string, iconUrl?: string): Link {
+export function buildLink(url: string, title: string, iconUrl?: string): Link {
   return {
     url,
     title,
@@ -36,7 +36,7 @@ function buildLink(url: string, title: string, iconUrl?: string): Link {
   };
 }
 
-function now() {
+export function now() {
   return new Date().toJSON();
 }
 
@@ -56,11 +56,6 @@ export function loadLinkList(): LinkList {
   return JSON.parse(localStorage.getItem(LIST_KEY) ?? '[]');
 }
 
-export function deleteAllLinks() {
-  localStorage.setItem(MAP_KEY, '{}');
-  localStorage.setItem(LIST_KEY, '[]');
-}
-
 export async function getPageInfo(): Promise<{
   url: string;
   title: string;
@@ -76,4 +71,42 @@ export async function getPageInfo(): Promise<{
       );
     });
   });
+}
+
+function mergeLinks(localLink: Link, remoteLink: Link) {
+  return {
+    ...localLink,
+    read: localLink.read || remoteLink.read,
+    notes: mergeNotes(localLink.notes, remoteLink.notes),
+  };
+}
+
+function mergeNotes(localNotes: Note[], remoteNotes: Note[]) {
+  return [
+    ...localNotes,
+    ...remoteNotes.filter(
+      remoteNote => !localNotes.some(note => note.text === remoteNote.text)
+    ),
+  ].sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+}
+
+export function mergeLinkMaps(localMap: LinkMap, remoteMap: LinkMap): LinkMap {
+  return Object.entries(remoteMap).reduce(
+    (mergedMap, [remoteUrl, remoteLink]) => {
+      return {
+        ...mergedMap,
+        [remoteUrl]: mergedMap[remoteUrl]
+          ? mergeLinks(mergedMap[remoteUrl], remoteLink)
+          : remoteLink,
+      };
+    },
+    { ...localMap }
+  );
+}
+
+export function generateLinkListFromLinkMap(linkMap: LinkMap): LinkList {
+  return Object.values(linkMap)
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+    .map(link => link.url)
+    .reverse();
 }

@@ -1,14 +1,23 @@
 import { useState } from 'preact/hooks';
 import NotesToggler from './NotesToggler';
+import ToggleReadIcon from './ToggleReadIcon';
+import DeleteIcon from './DeleteIcon';
 import { format } from 'timeago.js';
 import { Link } from './types';
 
 type Props = {
   links: Link[];
+  title: string;
   deleteLink: (url: string) => any;
+  toggleLinkRead: (url: string) => any;
 };
 
-export default function LinkList({ links, deleteLink }: Props) {
+export default function LinkList({
+  links,
+  title,
+  deleteLink,
+  toggleLinkRead,
+}: Props) {
   const [visibleNotesUrl, setVisibleNotesUrl] = useState<string | null>(null);
 
   function getDomain(url: string): string {
@@ -24,9 +33,10 @@ export default function LinkList({ links, deleteLink }: Props) {
   }
 
   return (
-    <div className='bg-neutral h-full rounded-t-lg p-3'>
+    <div className='mb-5'>
+      <div className='text-md mb-3 pl-3 font-bold text-slate-100'>{title}</div>
       {links.map(link => (
-        <div key={link.url} className='mb-2 rounded-md hover:bg-neutral-700'>
+        <div key={link.url} className='py-1 pl-3 hover:bg-neutral-700'>
           <div className='flex'>
             <div className='flex-none'>
               <img
@@ -37,6 +47,7 @@ export default function LinkList({ links, deleteLink }: Props) {
                 className='bg-base-100 h-11 w-11 rounded-md p-3'
               />
             </div>
+
             <div className='group flex-auto px-3 pt-1'>
               <div className='flex'>
                 <div
@@ -48,6 +59,7 @@ export default function LinkList({ links, deleteLink }: Props) {
                     {getDomain(link.url)} &bull; {format(link.date)}
                   </div>
                 </div>
+
                 <div className='mt-2 hidden flex-none group-hover:flex'>
                   {link.notes.length > 0 && (
                     <div className='flex-auto'>
@@ -57,37 +69,14 @@ export default function LinkList({ links, deleteLink }: Props) {
                       />
                     </div>
                   )}
-                  <div className='ml-2 hidden flex-auto cursor-pointer'>
-                    {/* mini check mark */}
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      viewBox='0 0 16 16'
-                      fill='currentColor'
-                      className='h-5 w-5'
-                    >
-                      <path
-                        fillRule='evenodd'
-                        d='M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
-                  </div>
-                  {/* mini x mark */}
-                  <div
-                    className='ml-2 flex-auto cursor-pointer'
-                    onClick={() => deleteLink(link.url)}
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      viewBox='0 0 20 20'
-                      fill='currentColor'
-                      className='h-5 w-5'
-                    >
-                      <path d='M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z' />
-                    </svg>
-                  </div>
+                  <ToggleReadIcon
+                    isRead={link.read}
+                    onClick={() => toggleLinkRead(link.url)}
+                  />
+                  <DeleteIcon onClick={() => deleteLink(link.url)} />
                 </div>
               </div>
+
               {visibleNotesUrl === link.url && link.notes.length > 0 && (
                 <ul>
                   {link.notes.map(note => (

@@ -3,7 +3,7 @@ import { ManifestType } from '@src/manifest-type';
 
 const manifest: ManifestType = {
   manifest_version: 3,
-  name: packageJson.name,
+  name: 'Link Saver',
   version: packageJson.version,
   description: packageJson.description,
   permissions: ['sidePanel', 'activeTab', 'storage', 'favicon'],

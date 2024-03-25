@@ -7,7 +7,7 @@ export type Link = {
   notes: Note[];
 };
 
-type Note = {
+export type Note = {
   text: string;
   date: string;
 };

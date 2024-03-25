@@ -10,7 +10,7 @@ import {
   loadLinkMap,
   loadLinkList,
 } from './util';
-import { LinkMap, LinkList as LinkListType } from './types';
+import { LinkMap, LinkList as LinkListType, Link } from './types';
 
 const Sidepanel = () => {
   const [linkMap, setLinkMap] = useState<LinkMap>(loadLinkMap());
@@ -26,6 +26,13 @@ const Sidepanel = () => {
     setLinkList(addLinkToList(linkList, url));
   }
 
+  function toggleLinkRead(url: string) {
+    setLinkMap({
+      ...linkMap,
+      [url]: { ...linkMap[url], read: !linkMap[url].read },
+    });
+  }
+
   function deleteLink(url: string) {
     const { url: _, ...updatedLinkMap } = linkMap;
     setLinkMap(updatedLinkMap);
@@ -39,12 +46,30 @@ const Sidepanel = () => {
     }
   }
 
-  const links = linkList.map(url => linkMap[url]).reverse();
+  const links = linkList.map(url => linkMap[url]);
+  const [readLinks, unreadLinks] = links.reduce<[Link[], Link[]]>(
+    (acc, link) => {
+      acc[link.read ? 0 : 1].push(link);
+      return acc;
+    },
+    [[], []]
+  );
 
   return (
-    <div className='flex h-full flex-col p-3'>
-      <div className='flex-1'>
-        <LinkList links={links} deleteLink={deleteLink} />
+    <div className='flex h-full flex-col p-2'>
+      <div className='bg-neutral base-content flex-1 rounded-t-lg py-3'>
+        <LinkList
+          title='Unread'
+          links={unreadLinks}
+          deleteLink={deleteLink}
+          toggleLinkRead={toggleLinkRead}
+        />
+        <LinkList
+          title='Read'
+          links={readLinks}
+          deleteLink={deleteLink}
+          toggleLinkRead={toggleLinkRead}
+        />
       </div>
       <div className='flex-none'>
         <AddLinkForm saveLink={saveLink} deleteAllLinks={deleteAllLinks} />
