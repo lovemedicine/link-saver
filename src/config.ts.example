@@ -1,0 +1,4 @@
+export const githubAccessToken = 'your-token-here';
+export const gistId = 'your-gist-id-here';
+export const gistFilename = 'linkSaverData.json';
+export const password = 'your-password-here';

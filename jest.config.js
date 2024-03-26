@@ -12,4 +12,5 @@ export default {
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],
   },
+  setupFiles: ['./jest.polyfills.js'],
 };

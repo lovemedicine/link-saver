@@ -28,12 +28,15 @@ describe('mergeLinkMaps', () => {
     );
   });
 
-  it('should mark local link as read if remote link is read', () => {
+  it('should mark local link as read when either local or remote link is read', () => {
     const [url, localLink] = Object.entries(localMap)[0];
     const remoteLink = { ...localLink, read: true };
     const remoteMap = { ...localMap, [url]: remoteLink };
     expect(localMap[url].read).toBe(false);
     expect(mergeLinkMaps(localMap, remoteMap)[url].read).toBe(true);
+    const localMapCopy = { ...localMap, [url]: { ...localLink, read: true } };
+    expect(localMapCopy[url].read).toBe(true);
+    expect(mergeLinkMaps(localMapCopy, remoteMap)[url].read).toBe(true);
   });
 
   it('should add new remote notes to local notes', () => {

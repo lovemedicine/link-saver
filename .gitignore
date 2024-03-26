@@ -17,3 +17,6 @@ public/manifest.json
 
 # timestamped vite configs
 vite.config.ts.timestamp*
+
+# config
+src/config.ts
